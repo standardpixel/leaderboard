@@ -1,0 +1,37 @@
+{
+  "name": "standardpixel-leaderboard",
+  "preferGlobal": "false",
+  "version": "0.1.0",
+  "author": "Eric Gelinas",
+  "description": "Combined leaderboard for all activity trackers",
+  "contributors": [ 
+    {
+      "name": "Eric Gelinas",
+      "email": "info@standardpixel.com"
+    } 
+  ],
+  "scripts": {
+    "start": "node ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/standardpixel/leaderboard"
+  },
+  "dependencies" : {
+	"colors"           : "*",
+	"express"          : "*",
+	"hbs"              : "*",
+	"less"             : "*",
+	"validator"        : "*",
+	"mocha"            : "*",
+	"moment"           : "*",
+	"passport"         : "*",
+	"passport-twitter" : "*",
+	"passport-fitbit"  : "*",
+	"redis"            : "*"
+  },
+  "license": "The MIT License (MIT)",
+  "engines": {
+    "node": ">=0.8.20"
+  }
+}
