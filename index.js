@@ -9,7 +9,8 @@ var port            = 3000,
 	hbs             = require('hbs'),
 	app_title       = 'StandardPixel Leaderboard',
 	keys            = require(__dirname + '/keys.json'),
-	user            = require(__dirname + '/server_modules/user.js');
+	user            = require(__dirname + '/server_modules/user.js'),
+	fitbit          = require('fitbit-js')(keys.fitbit.key, keys.fitbit.secret);
 
 app.use(express.cookieParser(keys.site.salt));
 app.use(express.bodyParser());
@@ -123,10 +124,25 @@ app.get('/hi',
   function(req, res){ /* will not be called */ });
 
 app.get('/hi/twitter', 
-  passport.authenticate('twitter', { failureRedirect: '/hi' }),
-  function(req, res) {
-    res.redirect('/');
-  });
+	passport.authenticate('twitter', { failureRedirect: '/hi' }),
+	function(req, res) {
+	res.redirect('/');
+});
+
+app.get('/fitbit', function (req, res) {
+	if(req.user) {
+		fitbit.getAccessToken(req, res, function (error, newToken) {
+			if(newToken) {
+				var tracker = require(__dirname + '/server_modules/tracker.js');
+				tracker.setupFitbit(req.user.id, newToken.oauth_token, newToken.oauth_secret, function() {
+					res.redirect('/');
+				});
+			}
+		});
+	} else {
+		res.redirect('/hi');
+	}
+});
 
 //
 // Define person routes
@@ -134,15 +150,15 @@ app.get('/hi/twitter',
 setupUIRoute('/', 'index.html', {
 	app_title  : app_title,
 	page_title : 'Welcome',
-	module     : 'index'
+	module     : 'index',
+	controller : 'index'
 });
 
-// Here is a ui route with a controller
-//setupUIRoute('/:user/event/:id', 'event.html', {
+//setupUIRoute('/fitbit', 'fitbit.html', {
 //	app_title  : app_title,
-//	page_title : 'An event',
-//	module     : 'event',
-//	controller : 'get_event'
+//	page_title : 'Connecting to Fitbit...',
+//	controller : 'fitbit_auth',
+//	module     : 'fitbit'
 //});
 
 //

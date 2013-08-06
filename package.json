@@ -27,8 +27,8 @@
 	"moment"           : "*",
 	"passport"         : "*",
 	"passport-twitter" : "*",
-	"passport-fitbit"  : "*",
-	"redis"            : "*"
+	"redis"            : "*",
+	"fitbit-js"        : "*"
   },
   "license": "The MIT License (MIT)",
   "engines": {
