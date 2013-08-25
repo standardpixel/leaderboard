@@ -2,7 +2,8 @@ var keys       = require(__dirname + '/../keys.json'),
     colors     = require('colors'),
     redis      = require("redis"),
     rclient    = redis.createClient(),
-	r_user_key = keys.site.redisKeyPrefix + 'user:';
+	r_user_key = keys.site.redisKeyPrefix + 'user:',
+	user_id    = null;
 	
 	
 function findById(id, callback) {
@@ -15,6 +16,7 @@ function findById(id, callback) {
 			callback('Unable to authenticate. Problem looking up user data.', null);
 		} else {
 			if(reply) {
+				user_id = id;
 				user_decorated = reply;
 				user_decorated.id = id;
 				callback(null, user_decorated);
@@ -49,6 +51,7 @@ exports.findOrCreate = function(user, callback) {
 			rclient.hmset(r_user_key + user.id, 'fullName', user._json.name, 'displayName', user._json.screen_name, function(err, replies) {
 				
 				if(replies === 'OK') {
+					user_id = user.id;
 					user_decorated = user;
 					callback(null, user_decorated);
 				} else {
@@ -61,6 +64,10 @@ exports.findOrCreate = function(user, callback) {
 		}
 		
 	});
+}
+
+exports.getUserId = function() {
+	return user_id;
 }
 
 exports.findById = findById

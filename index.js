@@ -10,7 +10,7 @@ var port            = 3000,
 	app_title       = 'StandardPixel Leaderboard',
 	keys            = require(__dirname + '/keys.json'),
 	user            = require(__dirname + '/server_modules/user.js'),
-	fitbit          = require('fitbit-js')(keys.fitbit.key, keys.fitbit.secret);
+	route           = require(__dirname + '/server_modules/route.js').init(app);
 
 app.use(express.cookieParser(keys.site.salt));
 app.use(express.bodyParser());
@@ -51,64 +51,6 @@ passport.deserializeUser(function(id, done) {
 });
 
 //
-// Standard person route
-//
-function setupUIRoute(route_definition, template_name, params) {
-	app.get(route_definition, function(req,res) {
-
-		if(req.user) {
-			console.log(('\r\nHello ' + req.user.fullName).green);
-		} else {
-			console.log(('\r\nHello not authenticated person!'.blue));
-		}
-		
-		fs.readFile(__dirname + '/ui/' + template_name, 'utf8', function(error, data) {
-			if(error) {
-				console.error('Error: Could not load template'.red,error);
-			} else {
-				if(params.controller) {
-					var controller = require(__dirname + '/controllers/' + params.controller).init({
-						request  : req,
-						response : res
-					}, function(response) {
-						hbs.registerPartial('route-content', data);
-						
-						for(var i in response) {
-							if(response.hasOwnProperty(i)) {
-								params[i] = response[i];
-							}
-						}
-
-						params['user'] = req.user;
-						res.render('main-template.html', params);
-					}, this);
-				} else {
-					hbs.registerPartial('route-content', data);
-
-					params['user'] = req.user;
-
-					res.render('main-template.html', params);
-				}
-			}
-		});
-	});
-}
-
-//
-// API Routes
-//
-function setupAPIRoute(route_definition, params) {
-	app.post(route_definition, function(req,res) {
-		var controller = require(__dirname + '/controllers/' + params.controller).init({
-			request : req,
-			user    : req.params.user
-		}, function(error,response) {
-			res.json(response);
-		}, this);
-	});
-}
-
-//
 // 500 Error
 //
 app.use(function(err, req, res, next){
@@ -129,37 +71,31 @@ app.get('/hi/twitter',
 	res.redirect('/');
 });
 
-app.get('/fitbit', function (req, res) {
-	if(req.user) {
-		fitbit.getAccessToken(req, res, function (error, newToken) {
-			if(newToken) {
-				var tracker = require(__dirname + '/server_modules/tracker.js');
-				tracker.setupFitbit(req.user.id, newToken.oauth_token, newToken.oauth_secret, function() {
-					res.redirect('/');
-				});
-			}
-		});
-	} else {
-		res.redirect('/hi');
-	}
-});
-
 //
 // Define person routes
 //
-setupUIRoute('/', 'index.html', {
+route.ui('/', 'index.html', {
 	app_title  : app_title,
 	page_title : 'Welcome',
-	module     : 'index',
-	controller : 'index'
+	module     : 'index'
 });
 
-//setupUIRoute('/fitbit', 'fitbit.html', {
-//	app_title  : app_title,
-//	page_title : 'Connecting to Fitbit...',
-//	controller : 'fitbit_auth',
-//	module     : 'fitbit'
-//});
+
+route.ui('/update', 'update.html', {
+	app_title  : app_title,
+	page_title : 'Updating...',
+	controller : 'update'
+});
+
+route.oauth('fitbit', keys.fitbit, function(err, response) {
+	require(__dirname + '/server_modules/tracker.js').setupFitbit(user.getUserId(), {
+		oauth_token  : response[1],
+		oauth_secret : response[2],
+		fitbit_id    : response[3].encoded_user_id
+	}, function(err, response) {
+		console.log('Fitbit is bound');
+	});
+});
 
 //
 // Define static routes

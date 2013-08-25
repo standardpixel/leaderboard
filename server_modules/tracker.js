@@ -1,8 +1,9 @@
-var keys       = require(__dirname + '/../keys.json'),
-    colors     = require('colors'),
-    redis      = require("redis"),
-    rclient    = redis.createClient(),
-	r_user_key = keys.site.redisKeyPrefix + 'tracker:';
+var keys         = require(__dirname + '/../keys.json'),
+    colors       = require('colors'),
+    redis        = require("redis"),
+    rclient      = redis.createClient(),
+	r_user_key   = keys.site.redisKeyPrefix + 'tracker:',
+	fitbit       = require('fitbit-js')(keys.fitbit.key, keys.fitbit.secret);
 	
 	
 function get(id, callback) {
@@ -21,8 +22,11 @@ function get(id, callback) {
 	
 	});
 }
+exports.get = get;
 
-exports.setupFitbit = function(user_id, auth_token, auth_secret, callback) {
+exports.setupFitbit = function(user_id, oauth_credentials, callback) {
+	
+	var o = oauth_credentials;
 	
 	//
 	// Look for the tracker
@@ -40,10 +44,12 @@ exports.setupFitbit = function(user_id, auth_token, auth_secret, callback) {
 		// otherwise if there is a user or an error, move on
 		//
 		if(!tracker) {
-			rclient.hmset(r_user_key + user_id, 'type', 'fitbit', 'token', auth_token, 'secret', auth_secret, function(err, replies) {
+			
+			rclient.hmset(r_user_key + user_id, 'type', 'fitbit', 'token', o.oauth_token, 'secret', o.oauth_secret, 'partner_id', o.fitbit_id,  function(err, replies) {
 				
 				if(replies === 'OK') {
-					callback(null, tracker);
+					oauth_credentials.type = 'fitbit';
+					callback(null, oauth_credentials);
 				} else {
 					console.error('Error adding tracker'.red, err);
 				}
@@ -56,4 +62,42 @@ exports.setupFitbit = function(user_id, auth_token, auth_secret, callback) {
 	});
 }
 
-exports.get = get;
+function actuallyUpdate(user_id, tracker, callback) {
+	var today     = new Date(),
+	    yesterday = today.setDate(today.getDate() - 1),
+		yesterday_string = new Date(yesterday).getFullYear() + '-' + (new Date(yesterday).getMonth() + 1) + '-' + new Date(yesterday).getDate();
+		
+	get(user_id, function(err, tracker) {
+		
+		console.log('tracker', tracker);
+	
+		if(tracker.type === 'fitbit') {
+			fitbit.apiCall('GET', '/user/' + tracker.partner_id + '/profile.json',
+			{token: {oauth_token_secret: tracker.secret, oauth_access_token: tracker.token}},
+			function(err, resp, json) {
+				if(err) {
+					console.error('Error', err);
+				}
+				console.log('Update done', arguments);
+			});
+		} else {
+			console.error('Unknown tracker type');
+			return false;
+		}
+		
+	});
+
+}
+
+exports.update = function(user_id) {
+	var callback = arguments[arguments.length-1],
+	    options = arguments.length > 2 ? arguments[1] : {};
+		
+	if(!options.type) {
+		get(user_id, function(err, tracker) {
+			actuallyUpdate(user_id, tracker, callback);
+		})
+	} else {
+		actuallyUpdate(user_id, options, callback);
+	}
+}
