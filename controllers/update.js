@@ -3,5 +3,6 @@ var keys           = require(__dirname + '/../keys.json'),
     
 
 exports.init = function(response, callback, scope) {
-	tracker_module.update(response.request.user.id);
+	tracker_module.update(response.request.user.id, callback);
+	response.request.res.redirect('/');
 }

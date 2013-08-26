@@ -1,6 +1,7 @@
-var fs    = require('fs'),
-    hbs   = require('hbs'),
-	OAuth = require('oauth').OAuth;
+var fs      = require('fs'),
+    hbs     = require('hbs'),
+	OAuth   = require('oauth').OAuth,
+	tracker = require(__dirname + '/tracker.js');
 
 //
 // Standard person route
@@ -67,15 +68,13 @@ exports.init = function(app) {
 		//
 		oauth : function(service_name, config, callback) {
 			
-			console.log('>', service_name, config);
-			
-			var oa = new OAuth(config.oauth[0],config.oauth[1], config.oauth[2], config.oauth[3], config.oauth[4], config.oauth[5], config.oauth[6], config.oauth[7]);
+			var oa = tracker.getClient(service_name);
 			
 			app.get('/bind/' + service_name, function(req, res){
 				oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
 					if (error) {
 						console.log(error);
-						res.send("There was an error connecting to fitbit.");
+						res.send("There was an error connecting to " + service_name);
 					}
 					else {
 						req.session.oauth = {};
