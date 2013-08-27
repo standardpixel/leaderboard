@@ -29,7 +29,8 @@
 	"passport-twitter" : "*",
 	"redis"            : "*",
 	"oauth"            : "*",
-	"request"          : "*"
+	"request"          : "*",
+	"moves"            : "*"
   },
   "license": "The MIT License (MIT)",
   "engines": {

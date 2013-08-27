@@ -106,6 +106,51 @@ exports.init = function(app) {
 					next(new Error("you're not supposed to be here."))
 				}
 			});
+		},
+		
+		//
+		// Oauth Routes
+		//
+		oauth2 : function(service_name, config, callback) {
+			
+			var oa = tracker.getClient(service_name);
+			
+			app.get('/bind/' + service_name, function(req, res){
+				oa.getOAuthRequestToken(function(error, oauth_token, oauth_token_secret, results){
+					if (error) {
+						console.log(error);
+						res.send("There was an error connecting to " + service_name);
+					}
+					else {
+						req.session.oauth = {};
+						req.session.oauth.token = oauth_token;
+						req.session.oauth.token_secret = oauth_token_secret;
+						res.redirect(config.authorize + '?oauth_token='+oauth_token)
+				}
+				});
+			});
+
+			app.get('/bind/' + service_name + '/callback', function(req, res, next){
+				
+				if (req.session.oauth) {
+					req.session.oauth.verifier = req.query.oauth_verifier;
+					var oauth = req.session.oauth;
+
+					oa.getOAuthAccessToken(oauth.token,oauth.token_secret,oauth.verifier, 
+					function(error, oauth_access_token, oauth_access_token_secret, results){
+						if (error){
+							callback(error, null);
+						} else {
+							req.session.oauth.access_token = oauth_access_token;
+							req.session.oauth,access_token_secret = oauth_access_token_secret;
+							callback(null, arguments);
+							res.redirect('/');
+						}
+					});
+				} else {
+					next(new Error("you're not supposed to be here."))
+				}
+			});
 		}
 	}
 }

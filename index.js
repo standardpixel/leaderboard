@@ -98,6 +98,44 @@ route.oauth('fitbit', keys.fitbit, function(err, response) {
 });
 
 //
+// Define Auth route
+//
+app.get('/bind/moves',
+	function(req, res){
+		var tracker = require(__dirname + '/server_modules/tracker.js'),
+		    moves   = tracker.getClient('moves');
+		
+		moves.authorize({
+			scope: ['activity', 'location']
+		}, res);
+	}
+);
+
+app.get('/bind/moves/callback?',
+	function(req, res){
+		var tracker = require(__dirname + '/server_modules/tracker.js'),
+		    moves   = tracker.getClient('moves');
+		moves.token(req.query.code, function(err, response, body) {
+			if(err) {
+				console.error('Error connecting to Moves', err);
+				res.send(500, 'Something broke!');
+			}
+				
+			tracker.setupMoves(user.getUserId(), JSON.parse(body), function(err, response) {
+				
+				if(err) {
+					console.error('Error saving Moves credentials', err);
+					return false;
+				}
+				
+				res.redirect('/');
+				
+			});
+		})
+	}
+);
+
+//
 // Define static routes
 //
 app.use('/js', express.static(__dirname + '/ui/js'));
