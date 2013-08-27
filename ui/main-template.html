@@ -5,28 +5,32 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <title>{{app_title}}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.2.1/base-min.css">
+		<link rel="stylesheet" href="/style/main.css" type="text/css">
 		<link rel="stylesheet" href="/style/{{module}}.css" type="text/css">
     </head>
-    <body>
-		<div>
+    <body class="chase-skin">
+		<header>
+			<ul class="nav">
+				<h1><div class="logo"></div><div class="logo-text">Leaderboard</div></h1>
+				{{#if user.id}}<li><a href="/hi/twitter">&nbsp;Log out</a></li>{{else}}<li><a href="/hi/Twitter">&nbsp;Log in with Twitter</a></li>{{/if}}
+			</ul>
+		</header>
+		<div class="pure-g">
+			<div class="pure-u-1-2 main">
+				{{#if user}}
+				{{>route-content}}
+				{{else}}
+				Way to authenticate, no auth!
+				{{/if}}
+				
+			</div>
 			<div class="navbar-inner">
 				<div class="container">
-					<a href="#">{{app_title}}</a>
-					<div>
-						<ul class="nav">
-							{{#if user.id}}<li><a href="/hi/twitter">&nbsp;Log out</a></li>{{else}}<li><a href="/hi/Twitter">&nbsp;Log in with Twitter</a></li>{{/if}}
-						</ul>
-					</div><!--/.nav-collapse -->
+					
+					<!--/.nav-collapse -->
 				</div>
 			</div>
-		</div>
-		
-		<div>
-			{{#if user}}
-			{{>route-content}}
-			{{else}}
-			Way to authenticate, no auth!
-			{{/if}}
 		</div>
 		
 		<footer>

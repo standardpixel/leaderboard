@@ -153,6 +153,7 @@ app.get('/bind/moves/callback?',
 app.use('/js', express.static(__dirname + '/ui/js'));
 app.use('/style', express.static(__dirname + '/ui/style'));
 app.use('/lib', express.static(__dirname + '/ui/lib'));
+app.use('/images', express.static(__dirname + '/ui/images'));
 
 //
 // Make it all go
