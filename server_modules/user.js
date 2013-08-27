@@ -3,6 +3,7 @@ var keys       = require(__dirname + '/../keys.json'),
     redis      = require("redis"),
     rclient    = redis.createClient(),
 	r_user_key = keys.site.redisKeyPrefix + 'user:',
+	OAuth      = require('oauth').OAuth,
 	user_id    = null;
 	
 	
@@ -68,6 +69,27 @@ exports.findOrCreate = function(user, callback) {
 
 exports.getUserId = function() {
 	return user_id;
+}
+
+exports.getFriends = function(user, creds, callback) {
+	var oauth = new OAuth(
+		'https://api.twitter.com/oauth/request_token',
+		'https://api.twitter.com/oauth/access_token',
+		keys.twitter.key,
+		keys.twitter.secret,
+		'1.0A',
+		null,
+		'HMAC-SHA1'
+	);
+	oauth.get(
+		'https://api.twitter.com/1.1/friends/ids.json?cursor=-1&user_id='+user.id+'&count=5000',
+		creds.oauth_token,
+		creds.oauth_secret,            
+		function (e, data, res){
+			if (e) console.error(e);        
+			callback(null, data);
+		}
+	);
 }
 
 exports.findById = findById

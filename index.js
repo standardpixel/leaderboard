@@ -10,7 +10,8 @@ var port            = 3000,
 	app_title       = 'StandardPixel Leaderboard',
 	keys            = require(__dirname + '/keys.json'),
 	user            = require(__dirname + '/server_modules/user.js'),
-	route           = require(__dirname + '/server_modules/route.js').init(app);
+	route           = require(__dirname + '/server_modules/route.js').init(app),
+	friend_list     = {};
 
 app.use(express.cookieParser(keys.site.salt));
 app.use(express.bodyParser());
@@ -34,8 +35,19 @@ passport.use(new TwitterStrategy({
     callbackURL: "http://127.0.0.1:3000/hi/twitter"
   },
   function(token, tokenSecret, profile, done) {
-    user.findOrCreate(profile, function (err, user) {
-      return done(err, user);
+    user.findOrCreate(profile, function (err, user_object) {
+		user.getFriends(user_object, {
+			oauth_token  : token,
+			oauth_secret : tokenSecret
+		}, function(err, friends) {
+			if(err) {
+				console.error('Error getting twitter follows', err);
+				return false;
+			}
+			friend_list = JSON.parse(friends).ids;
+
+			return done(err, user_object);
+		});
     });
   }
 ));
