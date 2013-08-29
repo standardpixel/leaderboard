@@ -9,11 +9,11 @@
 		<link rel="stylesheet" href="/style/main.css" type="text/css">
 		<link rel="stylesheet" href="/style/{{module}}.css" type="text/css">
     </head>	
-	<body>
+	<body class="{{#if user}}{{else}}no-auth{{/if}}">
 		<header>
 			<div class="nav">
 				<h1><div class="logo"></div><div class="logo-text">Leaderboard</div></h1>
-				{{#if user.id}}Hello {{user.fullName}} (<a href="/bye">&nbsp;Log out?</a>){{else}}<a href="/hi/Twitter">&nbsp;Log in with Twitter</a>{{/if}}
+				{{#if user.id}}Hello {{user.fullName}} (<a href="/bye">&nbsp;Log out?</a>){{/if}}
 			</div>
 		</header>	
 		<div id='main'>
@@ -21,7 +21,10 @@
 				{{#if user}}
 				{{>route-content}}
 				{{else}}
-				Way to authenticate, no auth!
+					<div id="background-screen"></div>
+					<p>A leaderboard for Fitbit and MovesApp users.</p>
+					<p>Yep, prettymuch the best thing since Fitbits and MovesApps.</p>
+					<div id="sign-in-twitter"><a href="/hi/Twitter"><img src="/images/sign-in-with-twitter-gray.png"></a></div>
 				{{/if}}
 			</article>
 		</div>

@@ -1,4 +1,4 @@
- header .logo {background-image:url(/images/Icon.png); width:57px; height:57px; display:inline-block;margin-bottom: -8px; margin-right: 0px;}
+ header .logo {background-image:url(/images/Icon.png); width:57px; height:57px; display:inline-block;margin-bottom: -8px; margin-right: 0px; margin-left:-5px;}
  header .logo-text {display: inline-block; font-size: 55px;}
 
 @media only screen and (-webkit-min-device-pixel-ratio: 1.5),
@@ -15,8 +15,21 @@ body {
 	color:#919191;
 }
 
+body.no-auth {
+	background:url(/images/noauth_bg.jpg) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+	color:rgb(255,255,255);
+}
+
 h1 {
 	font-weight: 300;
+}
+
+.no-auth a {
+	color:rgb(255,255,255);
 }
 
 #main article ul {
@@ -40,8 +53,19 @@ h1 {
 	padding:0;
 	margin: 1em auto;
 	max-width:800px;
+	padding:10px;
 }
 
 #main {
-	height:70vh;
+	min-height:60vh;
+}
+
+#background-screen {
+	position:absolute;
+	height:100vh;
+	width:100vw;
+	top:0;
+	left:0;
+	background-color:rgba(0,0,0,.7);
+	z-index:-1;
 }
