@@ -83,6 +83,11 @@ app.get('/hi/twitter',
 	res.redirect('/');
 });
 
+app.get('/bye', function(req, res){
+  req.logout();
+  res.redirect('/');
+});
+
 //
 // Define person routes
 //

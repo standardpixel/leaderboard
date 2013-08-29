@@ -10,12 +10,6 @@ exports.init = function(app) {
 	return {
 		ui : function(route_definition, template_name, params) {
 			app.get(route_definition, function(req,res) {
-
-				if(req.user) {
-					console.log(('\r\nHello ' + req.user.fullName).green);
-				} else {
-					console.log(('\r\nHello not authenticated person!'.blue));
-				}
 		
 				fs.readFile(__dirname + '/../ui/' + template_name, 'utf8', function(error, data) {
 					if(error) {

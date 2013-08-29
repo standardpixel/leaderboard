@@ -13,7 +13,7 @@
 		<header>
 			<div class="nav">
 				<h1><div class="logo"></div><div class="logo-text">Leaderboard</div></h1>
-				{{#if user.id}}Hello {{user.fullName}} (<a href="/hi/twitter">&nbsp;Log out?</a>){{else}}<a href="/hi/Twitter">&nbsp;Log in with Twitter</a>{{/if}}
+				{{#if user.id}}Hello {{user.fullName}} (<a href="/bye">&nbsp;Log out?</a>){{else}}<a href="/hi/Twitter">&nbsp;Log in with Twitter</a>{{/if}}
 			</div>
 		</header>	
 		<div id='main'>
@@ -25,7 +25,7 @@
 				{{/if}}
 			</article>
 		</div>
-		<footer>footer</footer>
+		<footer>This is a minimum viable product by <a href="http://standardpixel.com">Eric Gelinas</a>.</footer>
 		<script src="/lib/moment.js"></script>
 		<script src="/js/{{module}}.js"></script>
 	</body>
