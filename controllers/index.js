@@ -11,7 +11,8 @@ yesterday_string = '2013-8-27'; //Dummy date for testing
 exports.init = function(response, callback) {
 	var friends_object = {},
 	    responses      = [],
-		sorter         = [];
+		sorter         = [],
+		rank           = 0;
 	
 	if(response.request.user) {
 		user.getFriends(response.request.user, response.request.user.twitter_cred, function(err, friends) {
@@ -35,8 +36,20 @@ exports.init = function(response, callback) {
 							
 							for(var ii=0; sorter.length > ii; ii++) {
 								if(sorter[ii]) {
-									friends_object[sorter[ii]].rank = ii;
-									responses.push(sorter[ii]);
+									rank++;
+									var is_you = (sorter[ii] === response.request.user.id);
+									friends_object[sorter[ii]].rank = rank;
+									
+									if(is_you) {
+										output.rank = rank;
+									}
+									
+									responses.push({
+										id      : sorter[ii],
+										tracker : friends_object[sorter[ii]],
+										rank    : rank,
+										you     : is_you ? true : false
+									});
 								}
 							}
 						

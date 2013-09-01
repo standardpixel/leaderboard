@@ -42,13 +42,14 @@ a {
 
 #main article ul li {
 	background-color:#919191;
+	color:#fff;
 	border-radius:10px;
 	padding:10px;
 	list-style-type: none;
 	margin:0 0 10px 0;
 }
 
-#main article ul li.is_you {
+#main article ul li.is-you {
 	background-color:#76d6ff;
 }
 
