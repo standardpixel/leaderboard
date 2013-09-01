@@ -6,6 +6,8 @@ var today     = new Date(),
     yesterday = today.setDate(today.getDate() - 1),
 	yesterday_string = new Date(yesterday).getFullYear() + '-' + (new Date(yesterday).getMonth() + 1) + '-' + new Date(yesterday).getDate();
 
+yesterday_string = '2013-8-27'; //Dummy date for testing
+
 exports.init = function(response, callback) {
 	var friends_object = {},
 	    responses      = [],
@@ -16,7 +18,7 @@ exports.init = function(response, callback) {
 			output.friends = friends;
 			
 			for(var i=0; friends.length > i; i++) {
-				tracker.getDay(friends[i], '2013-8-27', function(err, friend_tracker) {
+				tracker.getDay(friends[i], yesterday_string, function(err, friend_tracker) {
 					
 					responses.push(friend_tracker);
 					sorter[friend_tracker.steps] = friend_tracker.user_id;
@@ -26,9 +28,7 @@ exports.init = function(response, callback) {
 					if(responses.length === friends.length) {
 						
 						responses = [];
-						tracker.getDay(response.request.user.id, '2013-8-27', function(err, my_tracker) {
-							
-							console.log('my tracker' ,response.request.user.id);
+						tracker.getDay(response.request.user.id, yesterday_string, function(err, my_tracker) {
 							
 							friends_object[response.request.user.id] = my_tracker;
 							sorter[my_tracker.steps] = response.request.user.id;
@@ -41,7 +41,6 @@ exports.init = function(response, callback) {
 							}
 						
 							output.rankings = responses;
-							console.log(output.rankings);
 							callback(output);
 						});
 

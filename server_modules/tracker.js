@@ -58,8 +58,6 @@ exports.get = get;
 function getDay(id, date, callback) {
 	rclient.hgetall(r_day_key + id + ':' + date, function(err, day) {
 		
-		console.log('rclient', arguments);
-		
 		if(err) {
 			console.error('Error while looking up user'.red, err, 'Key used: ' + r_day_key + id);
 			callback('Unable to authenticate. Problem looking up tracker data.', null);
