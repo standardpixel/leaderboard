@@ -35,20 +35,10 @@ passport.use(new TwitterStrategy({
     callbackURL: "http://127.0.0.1:3000/hi/twitter"
   },
   function(token, tokenSecret, profile, done) {
+	  
     user.findOrCreate(profile, function (err, user_object) {
-		user.getFriends(user_object, {
-			oauth_token  : token,
-			oauth_secret : tokenSecret
-		}, function(err, friends) {
-			if(err) {
-				console.error('Error getting twitter follows', err);
-				return false;
-			}
-			friend_list = JSON.parse(friends).ids;
-
-			return done(err, user_object);
-		});
-    });
+		return done(err, user_object);
+    }, [token, tokenSecret]);
   }
 ));
 
@@ -94,7 +84,8 @@ app.get('/bye', function(req, res){
 route.ui('/', 'index.html', {
 	app_title  : app_title,
 	page_title : 'Welcome',
-	module     : 'index'
+	module     : 'index',
+	controller : 'index'
 });
 
 

@@ -55,6 +55,27 @@ function get(id, callback) {
 }
 exports.get = get;
 
+function getDay(id, date, callback) {
+	rclient.hgetall(r_day_key + id + ':' + date, function(err, day) {
+		
+		console.log('rclient', arguments);
+		
+		if(err) {
+			console.error('Error while looking up user'.red, err, 'Key used: ' + r_day_key + id);
+			callback('Unable to authenticate. Problem looking up tracker data.', null);
+		} else {
+			if(day) {
+				day.user_id = id;
+				callback(null, day);
+			} else {
+				callback(null, null);
+			}
+		}
+	
+	});
+}
+exports.getDay = getDay;
+
 exports.setupFitbit = function(user_id, oauth_credentials, callback) {
 	
 	var o = oauth_credentials;
