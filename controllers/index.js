@@ -9,60 +9,88 @@ var today     = new Date(),
 yesterday_string = '2013-8-27'; //Dummy date for testing
 
 exports.init = function(response, callback) {
-	var friends_object = {},
-	    responses      = [],
-		sorter         = [],
-		rank           = 0;
-	
+	//
+	// Get friends
+	//
 	if(response.request.user) {
+		
+		user.sessionSet('twitter_cred', response.request.user.twitter_cred);
+		
 		user.getFriends(response.request.user, response.request.user.twitter_cred, function(err, friends) {
-			output.friends = friends;
 			
-			for(var i=0; friends.length > i; i++) {
-				tracker.getDay(friends[i], yesterday_string, function(err, friend_tracker) {
+			//
+			// Get day data
+			//
+			getDaysForUsers(friends, function(err, days) {
+				
+				rankDaysByStep(days, function(err, sorted_list) {
+					var id_array = [];
 					
-					responses.push(friend_tracker);
-					sorter[friend_tracker.steps] = friend_tracker.user_id;
-					friends_object[friend_tracker.user_id] = friend_tracker;
-					output.friends_data = friends_object;
+					//
+					// Get friend details
+					//
 					
-					if(responses.length === friends.length) {
-						
-						responses = [];
-						tracker.getDay(response.request.user.id, yesterday_string, function(err, my_tracker) {
-							
-							friends_object[response.request.user.id] = my_tracker;
-							sorter[my_tracker.steps] = response.request.user.id;
-							
-							for(var ii=0; sorter.length > ii; ii++) {
-								if(sorter[ii]) {
-									rank++;
-									var is_you = (sorter[ii] === response.request.user.id);
-									friends_object[sorter[ii]].rank = rank;
-									
-									if(is_you) {
-										output.rank = rank;
-									}
-									
-									responses.push({
-										id      : sorter[ii],
-										tracker : friends_object[sorter[ii]],
-										rank    : rank,
-										you     : is_you ? true : false
-									});
-								}
-							}
-						
-							output.rankings = responses;
-							callback(output);
-						});
-
+					for(var i=0; sorted_list.length > i; i++) {
+						id_array.push(sorted_list[i].user_id);
 					}
 					
+					user.getUserDetails(id_array, {
+						required : ['profile_image_url','name','screen_name']
+					}, function(err, details) {
+
+						for(var i=0; sorted_list.length > i; i++) {
+							sorted_list[i].user = details[sorted_list[i].user_id];
+						}
+					
+						callback({rankings:sorted_list});
+
+					});
+					
 				});
-			}
+				
+			});
+			
 		});
 	} else {
 		callback(output);
+	}
+}
+
+function rankDaysByStep(users_days, callback) {
+	
+	var sorter = [];
+	
+	for(var i in users_days) {
+		sorter.push(users_days[i]);
+	}
+	
+	sorter.sort(function(a,b){return a['steps']-b['steps']});
+	
+	callback(null, sorter);
+	
+}
+
+function getDaysForUsers(friends, callback) {
+	var friends_object = {},
+	    response_count = 0;
+	
+	for(var i=0; friends.length > i; i++) {
+		tracker.getDay(friends[i], yesterday_string, function(err, friend_day) {
+			
+			if(err) {
+				callback(err, null);
+				return false;
+			}
+
+			if(friend_day) {
+				friends_object[friend_day.user_id] = friend_day;
+			}
+			
+			response_count++;
+			
+			if(response_count === friends.length) {
+				callback(null, friends_object);
+			}
+		});
 	}
 }

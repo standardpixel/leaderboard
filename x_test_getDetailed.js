@@ -2,6 +2,7 @@ var keys       = require(__dirname + '/keys.json'),
     colors     = require('colors'),
     redis      = require("redis"),
     rclient    = redis.createClient(),
+	user       = require(__dirname + '/server_modules/user.js'),
 	r_user_key = keys.site.redisKeyPrefix + 'user:',
 	OAuth      = require('oauth').OAuth,
 	user_id    = null,
@@ -107,20 +108,6 @@ var keys       = require(__dirname + '/keys.json'),
 		78743 
 		];
 		
-var today     = new Date(),
-    yesterday = today.setDate(today.getDate() - 1),
-	yesterday_string = new Date(yesterday).getFullYear() + '-' + (new Date(yesterday).getMonth() + 1) + '-' + new Date(yesterday).getDate();
-	
-function random_number() {
-	return Math.floor(Math.random() * 14000) + 1;
-}
 
-for(var i=0; friends.length > i; i++) {
-	rclient.hmset(keys.site.redisKeyPrefix + 'day:' + friends[i] + ':' + yesterday_string, 'type', 'fitbit', 'steps', random_number(), function(err, replies) {
-
-		console.log(friends[i] + ' : ' + (err ? 'Yep' : 'Nope'), err);
-
-	});
-}
 
 return true;

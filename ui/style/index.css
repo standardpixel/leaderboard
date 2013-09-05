@@ -1,0 +1,18 @@
+#main .rank {
+	font-size:24px;
+}
+
+#main .rank li {
+	position:relative;
+	padding:19px 10px 19px 71px;
+}
+
+#main .rank li span {
+}
+
+#main .avatar {
+	border-radius:999px;
+	position:absolute;
+	top:10px;
+	left:10px;
+}

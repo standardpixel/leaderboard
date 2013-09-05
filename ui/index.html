@@ -1,5 +1,5 @@
 <p>Here is how you rank <a href="#your-rank">{{rank}}th</a> along side your friends. It is totally a compitition.</p>
 
-<ul>
-	{{#rankings}}<li{{#if you}} id="your-rank"{{/if}} class="{{#if you}}is-you{{/if}}">{{id}}</li>{{/rankings}}
+<ul class="rank">
+	{{#rankings}}<li{{#if you}} id="your-rank"{{/if}} class="{{#if you}}is-you{{/if}}"><img align="middle" class="avatar" src="{{user.profile_image_url}}"><span>{{user.name}}</span></li>{{/rankings}}
 </ul>
