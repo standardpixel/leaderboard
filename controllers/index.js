@@ -18,12 +18,15 @@ exports.init = function(response, callback) {
 		
 		user.getFriends(response.request.user, response.request.user.twitter_cred, function(err, friends) {
 			
+			friends.push(response.request.user.id);
+			
 			//
 			// Get day data
 			//
 			getDaysForUsers(friends, function(err, days) {
 				
 				rankDaysByStep(days, function(err, sorted_list) {
+					
 					var id_array = [];
 					
 					//

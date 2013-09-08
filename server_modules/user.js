@@ -237,7 +237,7 @@ exports.getFriends = function(user, creds, callback) {
 			creds[0],
 			creds[1],            
 			function (e, data, res){
-				if (e) console.error(e);
+				if (e) console.error('Error getting friends from Twitter', e);
 				twitter_friends = JSON.parse(data).ids;     
 				callback(null, twitter_friends);
 			}
