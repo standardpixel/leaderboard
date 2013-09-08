@@ -43,6 +43,13 @@ exports.init = function(response, callback) {
 
 						for(var i=0; sorted_list.length > i; i++) {
 							sorted_list[i].user = details[sorted_list[i].user_id];
+							
+							//
+							// Let the template know this is _you_
+							//
+							if(sorted_list[i].user_id === response.request.user.id) {
+								sorted_list[i].user['is-you'] = true;
+							}
 						}
 					
 						callback({rankings:sorted_list});
