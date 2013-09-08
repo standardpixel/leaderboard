@@ -27,7 +27,8 @@ exports.init = function(response, callback) {
 				
 				rankDaysByStep(days, function(err, sorted_list) {
 					
-					var id_array = [];
+					var id_array = [],
+					    rank     = null;
 					
 					//
 					// Get friend details
@@ -48,11 +49,16 @@ exports.init = function(response, callback) {
 							// Let the template know this is _you_
 							//
 							if(sorted_list[i].user_id === response.request.user.id) {
-								sorted_list[i].user['is-you'] = true;
+								sorted_list[i].user.you = true;
+								rank = i;
 							}
 						}
 					
-						callback({rankings:sorted_list});
+						callback({
+							rankings:sorted_list,
+							rank:rank+1,
+							total:sorted_list.length
+						});
 
 					});
 					
